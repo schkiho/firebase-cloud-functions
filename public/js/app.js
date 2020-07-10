@@ -13,6 +13,9 @@ requestModal.addEventListener("click", (e) => {
   }
 });
 
+/*
+// js for test functions
+
 // sayHello function call
 const button = document.querySelector(".call");
 button.addEventListener("click", () => {
@@ -22,3 +25,4 @@ button.addEventListener("click", () => {
     console.log(result.data);
   });
 });
+*/
