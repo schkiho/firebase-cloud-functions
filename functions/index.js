@@ -70,3 +70,38 @@ exports.addRequest = functions.https.onCall((data, context) => {
       throw new functions.https.HttpsError("internal", "request not added");
     });
 });
+
+// upvote callable function
+exports.upvote = functions.https.onCall((data, context) => {
+  // Check auth state
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "only authenticated users can add requests"
+    );
+  }
+  // get refs for user doc & requestdoc
+  const user = admin.firestore().collection("users").doc(context.auth.uid);
+  const request = admin.firestore().collection("requests").doc(data.id);
+
+  return user.get().then((doc) => {
+    // check user hasn't already upvoted the request
+    if (doc.data().upvotedOn.includes(data.id)) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "You can only upvote something once"
+      );
+    }
+    // update user array
+    return user
+      .update({
+        upvotedOn: [...doc.data().upvotedOn, data.id],
+      })
+      .then(() => {
+        // update votes on the request
+        return request.update({
+          upvotes: admin.firestore.FieldValue.increment(1),
+        });
+      });
+  });
+});
