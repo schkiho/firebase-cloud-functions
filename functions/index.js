@@ -56,8 +56,17 @@ exports.addRequest = functions.https.onCall((data, context) => {
       "request must be no more than 30 characters long"
     );
   }
-  return admin.firestore().collection("requests").add({
-    text: data.text,
-    upvotes: 0,
-  });
+  admin
+    .firestore()
+    .collection("requests")
+    .add({
+      text: data.text,
+      upvotes: 0,
+    })
+    .then(() => {
+      return "new request added";
+    })
+    .catch(() => {
+      throw new functions.https.HttpsError("internal", "request not added");
+    });
 });
