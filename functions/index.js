@@ -106,8 +106,6 @@ exports.upvote = functions.https.onCall(async (data, context) => {
 exports.logActivities = functions.firestore
   .document("/{collection}/{id}") // with {collection} it looks for changes in each collection
   .onCreate((snap, context) => {
-    console.log(snap.data());
-
     const collection = context.params.collection;
     const id = context.params.id;
 
